@@ -1718,7 +1718,7 @@ considered to be meta characters."
    ;; SYS_RE = r'(?u)^(?P<name>[\\]?\w(\w|-)*?)::(?P<target>\S*?)' + \
    ;;          r'(\[(?P<attrlist>.*?)\])$'
    ;; conditional inclusion
-   (list "^\\(\\(?:ifn?def\\|endif\\)::\\)\\([^ \t\n]*?\\)\\(\\[\\).+?\\(\\]\\)[ \t]*$"
+   (list "^\\(\\(?:ifn?def\\|ifeval\\|endif\\)::\\)\\([^ \t\n]*?\\)\\(\\[\\).*?\\(\\]\\)[ \t]*$"
          '(1 '(face adoc-preprocessor adoc-reserved block-del))    ; macro name
          '(2 '(face adoc-delimiter adoc-reserved block-del))       ; condition
          '(3 '(face adoc-hide-delimiter adoc-reserved block-del))  ; [
