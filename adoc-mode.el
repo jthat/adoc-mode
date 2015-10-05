@@ -5,7 +5,7 @@
 ;; Author: Florian Kaufmann <sensorflo@gmail.com>
 ;; URL: https://github.com/sensorflo/adoc-mode/wiki
 ;; Created: 2009
-;; Version: 0.6.3
+;; Version: 0.6.4
 ;; Package-Requires: ((markup-faces "1.0.0"))
 ;; Keywords: wp AsciiDoc
 ;; 
@@ -74,7 +74,7 @@
 ;;    first only loads adoc mode when necessary, the 2nd always during startup
 ;;    of Emacs.
 ;; 
-;;    * `(autoload 'adoc-mode "adoc-mode")`
+;;    * `(autoload 'adoc-mode "adoc-mode" nil t)`
 ;; 
 ;;    * `(require 'adoc-mode)`
 ;; 
@@ -178,7 +178,7 @@
 ;; tempo or tempo-snippet is required later below
 
 
-(defconst adoc-mode-version "0.6.3" 
+(defconst adoc-mode-version "0.6.4" 
   "adoc mode version number.
 
 Based upon AsciiDoc version 8.5.2. I.e. regexeps and rules are
@@ -1448,13 +1448,13 @@ Concerning TYPE, LEVEL and SUB-TYPE see `adoc-re-llisti'."
     '(1 '(face adoc-complex-replacement adoc-reserved t))
     '(2 '(face adoc-align adoc-reserved t))))
 
-(defmacro adoc-kw-verbatim-paragraph-sequence ()
+(defun adoc-kw-verbatim-paragraph-sequence ()
   "Creates a keyword which highlights a sequence of verbatim paragraphs."
-  `(list
+  (list
     ;; matcher function
-    (lambda (end)
+    `(lambda (end)
       (and (re-search-forward ,(adoc-re-verbatim-paragraph-sequence) end t)
-           (not (text-property-not-all (match-beginning 0) (match-end 0) 'adoc-reserved nil))))
+           (not (text-property-not-all (match-beginning 0) (match-end 0) adoc-reserved nil))))
     ;; highlighers
     '(1 '(face adoc-monospace adoc-reserved t font-lock-multiline t))))
 
