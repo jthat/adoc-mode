@@ -286,8 +286,79 @@ removed before TRANSFORM is evaluated.
        "foo" markup-reference-face "[]" markup-meta-face "\n" nil
      "lorem " 'no-face "xref" markup-command-face ":" markup-meta-face
        "foo" markup-internal-reference-face "[" markup-meta-face
-       "bla bli bla blu" markup-reference-face "]" markup-meta-face
+       "bla bli bla blu" markup-reference-face "]" markup-meta-face "\n" nil
+
+     ;; caption spawns multiple lines
+     "xref" markup-command-face ":" markup-meta-face
+       "foo" markup-internal-reference-face "[" markup-meta-face
+       "bla\nbli\nbla\nblu" markup-reference-face "]" markup-meta-face "\n" nil
        ))
+
+(ert-deftest adoctest-test-footnotes ()
+  (adoctest-faces "footnotes"
+     ;; simple example
+     "footnote" markup-command-face ":" markup-meta-face
+     "[" markup-meta-face "lorem ipsum" markup-secondary-text-face
+     "]" markup-meta-face "\n" nil
+
+     ;; footnote can be hard up against the preceding word
+     "lorem" 'no-face "footnote" markup-command-face ":" markup-meta-face
+     "[" markup-meta-face "ipsum" markup-secondary-text-face
+     "]" markup-meta-face "\n" nil
+
+     ;; attribute-list is not really an attribute list but normal text,
+     ;; i.e. comma, equal, double quotes are not fontified as meta characters
+     "footnote" markup-command-face ":" markup-meta-face
+     "[" markup-meta-face
+     "lorem, ipsum=dolor, sit=\"amen\"" markup-secondary-text-face
+     "]" markup-meta-face "\n" nil
+
+     ;; multiline attribute list
+     "footnote" markup-command-face ":" markup-meta-face
+     "[" markup-meta-face
+     "lorem\nipsum\ndolor\nsit\namen" markup-secondary-text-face
+     "]" markup-meta-face "\n" nil
+     ))
+
+(ert-deftest adoctest-test-footnoterefs ()
+  (adoctest-faces "footnoterefs"
+     ;; simple example
+     "footnoteref" markup-command-face ":" markup-meta-face
+     "[" markup-meta-face
+     "myid" markup-internal-reference-face
+     "]" markup-meta-face "\n" nil
+
+     "footnoteref" markup-command-face ":" markup-meta-face
+     "[" markup-meta-face
+     "myid" markup-anchor-face
+     "," markup-meta-face
+     "lorem ipsum" markup-secondary-text-face
+     "]" markup-meta-face "\n" nil
+
+     ;; footnoteref can be hard up against the preceding word
+     "lorem" 'no-face
+     "footnoteref" markup-command-face ":" markup-meta-face
+     "[" markup-meta-face
+     "myid" markup-internal-reference-face
+     "]" markup-meta-face "\n" nil
+
+     "lorem" 'no-face
+     "footnoteref" markup-command-face ":" markup-meta-face
+     "[" markup-meta-face
+     "myid" markup-anchor-face
+     "," markup-meta-face
+     "lorem ipsum" markup-secondary-text-face
+     "]" markup-meta-face "\n" nil
+
+     ;; multiline text
+     "lorem" 'no-face
+     "footnoteref" markup-command-face ":" markup-meta-face
+     "[" markup-meta-face
+     "myid" markup-anchor-face
+     "," markup-meta-face
+     "lorem\nipsum\ndolor\nsit" markup-secondary-text-face
+     "]" markup-meta-face "\n" nil
+     ))
 
 (ert-deftest adoctest-test-images ()
   (adoctest-faces "images"
@@ -309,6 +380,13 @@ removed before TRANSFORM is evaluated.
        "./foo/bar.png" markup-internal-reference-face
        "[" markup-meta-face "alt" markup-attribute-face "=" markup-meta-face "lorem ipsum" markup-secondary-text-face "," markup-meta-face
        "title" markup-attribute-face "=" markup-meta-face "lorem ipsum" markup-secondary-text-face "]" markup-meta-face "\n" nil
+     ;; multiline alt and title
+     "image" markup-complex-replacement-face "::" markup-meta-face
+       "./foo/bar.png" markup-internal-reference-face
+       "[" markup-meta-face "alt" markup-attribute-face "=" markup-meta-face
+       "lorem\nipsum\nsit" markup-secondary-text-face "," markup-meta-face
+       "title" markup-attribute-face "=" markup-meta-face
+       "lorem\nipsum\nsit" markup-secondary-text-face "]" markup-meta-face "\n" nil
 
      ;; no everything again with inline macros
      "foo " 'no-face "image" markup-complex-replacement-face ":" markup-meta-face 
@@ -326,7 +404,14 @@ removed before TRANSFORM is evaluated.
      "foo " 'no-face "image" markup-complex-replacement-face ":" markup-meta-face 
        "./foo/bar.png" markup-internal-reference-face
        "[" markup-meta-face "alt" markup-attribute-face "=" markup-meta-face "lorem ipsum" markup-secondary-text-face "," markup-meta-face
-       "title" markup-attribute-face "=" markup-meta-face "lorem ipsum" markup-secondary-text-face "]" markup-meta-face "bar" 'no-face))
+       "title" markup-attribute-face "=" markup-meta-face "lorem ipsum" markup-secondary-text-face "]" markup-meta-face "bar" 'no-face "\n" nil
+
+     "image" markup-complex-replacement-face ":" markup-meta-face
+       "./foo/bar.png" markup-internal-reference-face
+       "[" markup-meta-face "alt" markup-attribute-face "=" markup-meta-face
+       "lorem\nipsum\nsit" markup-secondary-text-face "," markup-meta-face
+       "title" markup-attribute-face "=" markup-meta-face
+       "lorem\nipsum\nsit" markup-secondary-text-face "]" markup-meta-face "\n" nil))
 
 (ert-deftest adoctest-test-attribute-list ()
   (adoctest-faces "attribute-list"
@@ -398,11 +483,17 @@ removed before TRANSFORM is evaluated.
 (ert-deftest adoctest-test-quotes-medium ()
   (adoctest-faces "test-quotes-medium"
    ;; test wheter constrained/unconstrained quotes can spawn multiple lines
-   "Lorem " 'no-face "*" markup-meta-hide-face "ipsum" markup-strong-face "\n" nil
-   "dolor" markup-strong-face "*" markup-meta-hide-face " sit" 'no-face "\n" nil
-   "Lorem " 'no-face "__" markup-meta-hide-face "ipsum" markup-emphasis-face "\n" nil
-   "dolor" markup-emphasis-face "__" markup-meta-hide-face " sit" 'no-face "\n" nil
-   "\n" nil
+   "Lorem " 'no-face "*" markup-meta-hide-face "ipsum" markup-strong-face
+   "\n" nil "dolor" markup-strong-face "\n" nil "dolor" markup-strong-face
+   "\n" nil "dolor" markup-strong-face "\n" nil "dolor" markup-strong-face
+   "*" markup-meta-hide-face
+   " sit" 'no-face "\n" nil
+
+   "Lorem " 'no-face "__" markup-meta-hide-face "ipsum" markup-emphasis-face
+   "\n" nil "dolor" markup-emphasis-face "\n" nil "dolor" markup-emphasis-face
+   "\n" nil "dolor" markup-emphasis-face "\n" nil "dolor" markup-emphasis-face
+   "__" markup-meta-hide-face
+   " sit" 'no-face "\n" nil
 
    ;; tests border case that delimiter is at the beginnin/end of an paragraph/line
    ;; constrained at beginning
@@ -525,6 +616,12 @@ removed before TRANSFORM is evaluated.
     "http://www.lorem.com/ipsum.html" markup-internal-reference-face
     "[" markup-meta-face "sit amet" markup-reference-face "]" markup-meta-face
     " bar \n" nil
+    ;; link text contains newlines and commas
+    "http://www.lorem.com/ipsum.html" markup-internal-reference-face
+    "[" markup-meta-face
+    "sit,\namet,\nconsectetur" markup-reference-face
+    "]" markup-meta-face
+    " bar \n" nil
     ;; url inline macro withOUT attriblist 
     "http://www.lorem.com/ipsum.html" markup-reference-face
     "[]" markup-meta-face
@@ -610,12 +707,12 @@ removed before TRANSFORM is evaluated.
   (adoctest-trans "foo!\n+++!" "foo\n===" '(adoc-promote-title 1))
   (adoctest-trans "foo!\n---!" "foo\n^^^" '(adoc-promote-title 2)))
 
-;; since it's a whitebox test we know denote and promote only differ by inverse
-;; arg. So denote doesn't need to be throuhly tested again
-(ert-deftest adoctest-test-denote-title ()
-  (adoctest-trans "= foo" "===== foo" '(adoc-denote-title 1))
-  (adoctest-trans "= foo =" "===== foo =====" '(adoc-denote-title 1))
-  (adoctest-trans "foo!\n===!" "foo\n+++" '(adoc-denote-title 1)))
+;; since it's a whitebox test we know demote and promote only differ by inverse
+;; arg. So demote doesn't need to be throuhly tested again
+(ert-deftest adoctest-test-demote-title ()
+  (adoctest-trans "= foo" "===== foo" '(adoc-demote-title 1))
+  (adoctest-trans "= foo =" "===== foo =====" '(adoc-demote-title 1))
+  (adoctest-trans "foo!\n===!" "foo\n+++" '(adoc-demote-title 1)))
 
 ;; todo: test after transition point is still on title lines
 (ert-deftest adoctest-test-toggle-title-type ()
@@ -823,6 +920,28 @@ removed before TRANSFORM is evaluated.
 	(indent-tabs-mode t))
     (adoctest-trans "" "  x"   '(adoc-insert-indented "x" 1))
     (adoctest-trans "" "\t  x" '(adoc-insert-indented "x" 2))))
+
+(ert-deftest adoctest-test-imenu-create-index ()
+  (unwind-protect
+      (progn
+        (set-buffer (get-buffer-create "adoc-test"))
+        (insert "= document title\n"
+                "== chapter 1\n"
+                "=== sub chapter 1.1\n"
+                "chapter 2\n"
+                "----------\n"
+                "sub chapter 2.1\n"
+                "~~~~~~~~~~~~~~\n")
+        (should
+         (equal
+          (adoc-imenu-create-index)
+          (list
+           (cons "document title" 1)
+           (cons "chapter 1" 18)
+           (cons "sub chapter 1.1" 31)
+           (cons "chapter 2" 51)
+           (cons "sub chapter 2.1" 72)))))
+    (kill-buffer "adoc-test")))
 
 ;; purpose
 ;; - ensure that the latest version, i.e. the one currently in buffer(s), of
